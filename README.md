@@ -49,3 +49,11 @@ src/
 En el archivo `package.json` se encuentran los siguientes scripts:
 
 - `npm run dev`: Inicia el servidor de desarrollo.
+
+## 📷 Capturas de pantalla
+
+![Capturas de pantalla](assets/inicio.png)
+![Capturas de pantalla](assets/pokedex.png)
+![Capturas de pantalla](assets/tipos.png)
+![Capturas de pantalla](assets/generaciones.png)
+
