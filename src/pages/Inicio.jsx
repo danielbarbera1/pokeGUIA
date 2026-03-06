@@ -84,7 +84,7 @@ const Inicio = () => {
       {/* Footer simple */}
       <footer className="border-t border-gray-800 mt-16 py-8">
         <div className="container mx-auto px-4 text-center text-gray-500">
-          <p>PokéMetric © 2024 - Tu enciclopedia Pokémon</p>
+          <p>PokéMetric © 2026 - Tu enciclopedia Pokémon</p>
         </div>
       </footer>
     </div>

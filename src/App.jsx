@@ -8,6 +8,11 @@ import Pokedex from "./pages/Pokedex.jsx"
 import Generaciones from "./pages/Generaciones.jsx"
 import Batallas from "./pages/Batallas.jsx"
 import Tipos from "./pages/Tipos.jsx"
+import CalculadoraTipos from './pages/CalculadoraTipos.jsx'
+import Movimientos from './pages/Movimientos.jsx'
+import CreadorEquipo from './pages/CreadorEquipo.jsx'
+import Privacidad from './pages/Privacidad.jsx'
+import Terminos from './pages/Terminos.jsx'
 
 function App() {
   return (
@@ -21,6 +26,11 @@ function App() {
         <Route path="/batallas" element={<Batallas />} />
         <Route path="/tipos" element={<Tipos />} />
         <Route path="*" element={<Navigate to="/" />} />
+        <Route path="/calculadora" element={<CalculadoraTipos />} />
+        <Route path="/movimientos" element={<Movimientos />} />
+        <Route path="/creador" element={<CreadorEquipo />} />
+        <Route path="/privacidad" element={<Privacidad />} />
+        <Route path="/terminos" element={<Terminos />} />
       </Routes>
       <Footer />
     </BrowserRouter>

@@ -57,3 +57,6 @@ En el archivo `package.json` se encuentran los siguientes scripts:
 ![Capturas de pantalla](assets/tipos.png)
 ![Capturas de pantalla](assets/generaciones.png)
 
+
+tarea hacer que la barra de busqueda funcione 
+
