@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Card from '../components/Card';
-import Button from'../components/Button'
 
 const CalculadoraTipos = () => {
   const [types, setTypes] = useState([]);
@@ -199,87 +197,83 @@ const CalculadoraTipos = () => {
 
         {/* Resultado de efectividad */}
         {(attackingType || defendingTypes.length > 0) && (
-          <Card className="bg-gray-800 border-2 border-gray-700 mb-8">
-            <div className="p-6 text-center">
-              <h2 className="text-2xl font-bold mb-4">Resultado:</h2>
-              
-              <div className="flex flex-wrap justify-center items-center gap-4 mb-4">
-                {attackingType && (
-                  <div className="flex flex-col items-center">
-                    <span className={`px-6 py-3 rounded-lg font-bold text-lg capitalize
-                      ${typeColors[attackingType.name] || 'bg-gray-500'} text-white`}>
-                      {formatName(attackingType.name)}
-                    </span>
-                  </div>
-                )}
-                
-                <span className="text-2xl font-bold">⚔️</span>
-                
-                {defendingTypes.length > 0 ? (
-                  <div className="flex gap-2">
-                    {defendingTypes.map(type => (
-                      <span
-                        key={type.name}
-                        className={`px-6 py-3 rounded-lg font-bold text-lg capitalize
-                          ${typeColors[type.name] || 'bg-gray-500'} text-white`}
-                      >
-                        {formatName(type.name)}
-                      </span>
-                    ))}
-                  </div>
-                ) : (
-                  <span className="text-gray-400">Selecciona tipo(s) defensor(es)</span>
-                )}
-              </div>
-
-              {attackingType && defendingTypes.length > 0 && (
-                <div className="mt-4">
-                  <div className={`text-4xl font-bold mb-2
-                    ${effectiveness.color === 'green' ? 'text-green-400' : ''}
-                    ${effectiveness.color === 'orange' ? 'text-orange-400' : ''}
-                    ${effectiveness.color === 'red' ? 'text-red-400' : ''}
-                    ${effectiveness.color === 'gray' ? 'text-gray-400' : ''}
-                  `}>
-                    {effectiveness.text}
-                  </div>
-                  <div className="text-2xl text-gray-300">
-                    x{effectiveness.multiplier}
-                  </div>
+          <div className="bg-gray-800 rounded-xl border-2 border-gray-700 mb-8 p-6 text-center">
+            <h2 className="text-2xl font-bold mb-4 text-white">Resultado:</h2>
+            
+            <div className="flex flex-wrap justify-center items-center gap-4 mb-4">
+              {attackingType && (
+                <div className="flex flex-col items-center">
+                  <span className={`px-6 py-3 rounded-lg font-bold text-lg capitalize
+                    ${typeColors[attackingType.name] || 'bg-gray-500'} text-white`}>
+                    {formatName(attackingType.name)}
+                  </span>
                 </div>
               )}
+              
+              <span className="text-2xl font-bold">⚔️</span>
+              
+              {defendingTypes.length > 0 ? (
+                <div className="flex gap-2">
+                  {defendingTypes.map(type => (
+                    <span
+                      key={type.name}
+                      className={`px-6 py-3 rounded-lg font-bold text-lg capitalize
+                        ${typeColors[type.name] || 'bg-gray-500'} text-white`}
+                    >
+                      {formatName(type.name)}
+                    </span>
+                  ))}
+                </div>
+              ) : (
+                <span className="text-gray-400">Selecciona tipo(s) defensor(es)</span>
+              )}
             </div>
-          </Card>
+
+            {attackingType && defendingTypes.length > 0 && (
+              <div className="mt-4">
+                <div className={`text-4xl font-bold mb-2
+                  ${effectiveness.color === 'green' ? 'text-green-400' : ''}
+                  ${effectiveness.color === 'orange' ? 'text-orange-400' : ''}
+                  ${effectiveness.color === 'red' ? 'text-red-400' : ''}
+                  ${effectiveness.color === 'gray' ? 'text-gray-400' : ''}
+                `}>
+                  {effectiveness.text}
+                </div>
+                <div className="text-2xl text-gray-300">
+                  x{effectiveness.multiplier}
+                </div>
+              </div>
+            )}
+          </div>
         )}
 
         {/* Tabla de referencia rápida */}
-        <Card className="bg-gray-800 border-2 border-gray-700">
-          <div className="p-6">
-            <h2 className="text-xl font-bold mb-4 text-center">
-              📊 Referencia Rápida
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-              <div className="bg-green-900/30 p-3 rounded-lg">
-                <span className="text-green-400 font-bold">x2 / x4</span>
-                <p className="text-sm text-gray-400">Super efectivo</p>
-              </div>
-              <div className="bg-gray-700 p-3 rounded-lg">
-                <span className="text-gray-300 font-bold">x1</span>
-                <p className="text-sm text-gray-400">Normal</p>
-              </div>
-              <div className="bg-orange-900/30 p-3 rounded-lg">
-                <span className="text-orange-400 font-bold">x0.5 / x0.25</span>
-                <p className="text-sm text-gray-400">Poco efectivo</p>
-              </div>
-              <div className="bg-gray-600 p-3 rounded-lg md:col-span-3">
-                <span className="text-gray-300 font-bold">x0</span>
-                <p className="text-sm text-gray-400">Inmune</p>
-              </div>
+        <div className="bg-gray-800 rounded-xl border-2 border-gray-700 p-6">
+          <h2 className="text-xl font-bold mb-4 text-center text-white">
+            📊 Referencia Rápida
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+            <div className="bg-green-900/30 p-3 rounded-lg">
+              <span className="text-green-400 font-bold">x2 / x4</span>
+              <p className="text-sm text-gray-400">Super efectivo</p>
             </div>
-            <p className="text-xs text-gray-500 text-center mt-4">
-              * Los multiplicadores se combinan cuando hay dos tipos (ej: 2x2=4, 2x0.5=1)
-            </p>
+            <div className="bg-gray-700 p-3 rounded-lg">
+              <span className="text-gray-300 font-bold">x1</span>
+              <p className="text-sm text-gray-400">Normal</p>
+            </div>
+            <div className="bg-orange-900/30 p-3 rounded-lg">
+              <span className="text-orange-400 font-bold">x0.5 / x0.25</span>
+              <p className="text-sm text-gray-400">Poco efectivo</p>
+            </div>
+            <div className="bg-gray-600 p-3 rounded-lg md:col-span-3">
+              <span className="text-gray-300 font-bold">x0</span>
+              <p className="text-sm text-gray-400">Inmune</p>
+            </div>
           </div>
-        </Card>
+          <p className="text-xs text-gray-500 text-center mt-4">
+            * Los multiplicadores se combinan cuando hay dos tipos (ej: 2x2=4, 2x0.5=1)
+          </p>
+        </div>
       </div>
     </div>
   );

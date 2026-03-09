@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Card from '../components/Card';
 import Progress from '../components/Progress';
 
 const Movimientos = () => {
@@ -79,7 +78,7 @@ const Movimientos = () => {
         try {
           const moveRes = await fetch(move.url);
           const moveData = await moveRes.json();
-          
+
           return {
             id: moveData.id,
             name: moveData.name,
@@ -98,7 +97,7 @@ const Movimientos = () => {
       });
 
       const movesData = (await Promise.all(movePromises)).filter(m => m !== null);
-      
+
       if (offset === 0) {
         setMoves(movesData);
         setFilteredMoves(movesData);
@@ -139,6 +138,52 @@ const Movimientos = () => {
     setFilteredMoves(filtered);
   }, [searchTerm, selectedType, selectedCategory, moves]);
 
+  const [isSearchingApi, setIsSearchingApi] = useState(false)
+  const [searchFailed, setSearchFailed] = useState(false)
+
+  // Búsqueda específica en PokeAPI si no está en lista actual
+  useEffect(() => {
+    const searchExternalMove = async () => {
+      if (!searchTerm || searchTerm.trim() === '') return;
+      if (filteredMoves.length === 0) {
+        try {
+          setIsSearchingApi(true)
+          setSearchFailed(false)
+          const res = await fetch(`https://pokeapi.co/api/v2/move/${searchTerm.toLowerCase().trim().replace(/ /g, '-')}`)
+          if (!res.ok) throw new Error('Not found')
+          const moveData = await res.json()
+
+          const newMove = {
+            id: moveData.id,
+            name: moveData.name,
+            type: moveData.type.name,
+            power: moveData.power || '—',
+            accuracy: moveData.accuracy || '—',
+            pp: moveData.pp || '—',
+            category: moveData.damage_class?.name || 'status',
+            effect: moveData.effect_entries?.[0]?.short_effect || 'Sin descripción',
+            effectChance: moveData.effect_chance || null
+          };
+
+          setMoves(prev => {
+            if (prev.find(m => m.id === moveData.id)) return prev;
+            return [newMove, ...prev];
+          })
+        } catch (e) {
+          setSearchFailed(true)
+        } finally {
+          setIsSearchingApi(false)
+        }
+      }
+    }
+
+    const timer = setTimeout(() => {
+      searchExternalMove()
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [searchTerm, filteredMoves.length])
+
   // Cargar más movimientos
   const loadMore = () => {
     if (!loading && hasMore) {
@@ -148,14 +193,14 @@ const Movimientos = () => {
 
   // Formatear nombre
   const formatName = (name) => {
-    return name.split('-').map(word => 
+    return name.split('-').map(word =>
       word.charAt(0).toUpperCase() + word.slice(1)
     ).join(' ');
   };
 
   // Obtener ícono según categoría
   const getCategoryIcon = (category) => {
-    switch(category) {
+    switch (category) {
       case 'physical': return '💪';
       case 'special': return '✨';
       case 'status': return '📊';
@@ -171,7 +216,7 @@ const Movimientos = () => {
           <h1 className="text-3xl font-bold mb-4 text-center">
             📚 Base de Datos de Movimientos
           </h1>
-          
+
           {/* Barra de búsqueda */}
           <div className="max-w-2xl mx-auto mb-4">
             <input
@@ -232,63 +277,80 @@ const Movimientos = () => {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
               {filteredMoves.map((move) => (
-                <Card key={move.id} className="bg-gray-800 hover:bg-gray-750 transition-colors">
-                  <div className="p-4">
-                    {/* Header del movimiento */}
-                    <div className="flex justify-between items-start mb-3">
-                      <h3 className="text-lg font-bold capitalize">
-                        {formatName(move.name)}
-                      </h3>
-                      <span className="text-sm text-gray-400">
-                        #{move.id.toString().padStart(3, '0')}
-                      </span>
-                    </div>
-
-                    {/* Tipo y categoría */}
-                    <div className="flex gap-2 mb-3">
-                      <span className={`px-2 py-1 rounded-full text-xs font-semibold capitalize text-white
-                        ${typeColors[move.type] || 'bg-gray-500'}`}>
-                        {move.type}
-                      </span>
-                      <span className="px-2 py-1 rounded-full bg-gray-700 text-xs font-semibold capitalize">
-                        {getCategoryIcon(move.category)} {move.category}
-                      </span>
-                    </div>
-
-                    {/* Estadísticas del movimiento */}
-                    <div className="grid grid-cols-3 gap-2 text-center text-sm mb-3">
-                      <div>
-                        <div className="text-gray-400">Poder</div>
-                        <div className="font-bold">{move.power}</div>
-                      </div>
-                      <div>
-                        <div className="text-gray-400">Precisión</div>
-                        <div className="font-bold">{move.accuracy}%</div>
-                      </div>
-                      <div>
-                        <div className="text-gray-400">PP</div>
-                        <div className="font-bold">{move.pp}</div>
-                      </div>
-                    </div>
-
-                    {/* Descripción */}
-                    <p className="text-sm text-gray-400 line-clamp-2">
-                      {move.effect}
-                      {move.effectChance && ` (${move.effectChance}% de probabilidad)`}
-                    </p>
+                <div 
+                  key={move.id} 
+                  className="bg-gray-800 rounded-xl p-4 hover:bg-gray-700 transition-colors border border-gray-700"
+                >
+                  {/* Header del movimiento */}
+                  <div className="flex justify-between items-start mb-3">
+                    <h3 className="text-lg font-bold capitalize text-white">
+                      {formatName(move.name)}
+                    </h3>
+                    <span className="text-sm text-gray-400">
+                      #{move.id.toString().padStart(3, '0')}
+                    </span>
                   </div>
-                </Card>
+
+                  {/* Tipo y categoría */}
+                  <div className="flex gap-2 mb-3">
+                    <span className={`px-2 py-1 rounded-full text-xs font-semibold capitalize text-white
+                      ${typeColors[move.type] || 'bg-gray-500'}`}>
+                      {move.type}
+                    </span>
+                    <span className="px-2 py-1 rounded-full bg-gray-600 text-xs font-semibold capitalize text-white">
+                      {getCategoryIcon(move.category)} {move.category}
+                    </span>
+                  </div>
+
+                  {/* Estadísticas del movimiento */}
+                  <div className="grid grid-cols-3 gap-2 text-center text-sm mb-3">
+                    <div>
+                      <div className="text-gray-400">Poder</div>
+                      <div className="font-bold text-white">{move.power}</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400">Precisión</div>
+                      <div className="font-bold text-white">{move.accuracy === '—' ? '—' : `${move.accuracy}%`}</div>
+                    </div>
+                    <div>
+                      <div className="text-gray-400">PP</div>
+                      <div className="font-bold text-white">{move.pp}</div>
+                    </div>
+                  </div>
+
+                  {/* Descripción */}
+                  <p className="text-sm text-gray-400 line-clamp-2">
+                    {move.effect}
+                    {move.effectChance && ` (${move.effectChance}% de probabilidad)`}
+                  </p>
+                </div>
               ))}
             </div>
 
             {filteredMoves.length === 0 && (
               <div className="text-center py-12">
-                <p className="text-xl text-gray-400 mb-2">
-                  No se encontraron movimientos
-                </p>
-                <p className="text-gray-500">
-                  Intenta con otros filtros o términos de búsqueda
-                </p>
+                {isSearchingApi ? (
+                  <div className="flex flex-col items-center">
+                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mb-2"></div>
+                    <p className="text-gray-400">Buscando "{searchTerm}" en la PokeAPI...</p>
+                  </div>
+                ) : searchFailed ? (
+                  <div className="flex flex-col items-center">
+                    <span className="text-4xl mb-2">❓</span>
+                    <p className="text-xl text-gray-400 mb-2">
+                      No se encontró ningún movimiento llamado "{searchTerm}"
+                    </p>
+                  </div>
+                ) : (
+                  <div>
+                    <p className="text-xl text-gray-400 mb-2">
+                      No se encontraron movimientos
+                    </p>
+                    <p className="text-gray-500">
+                      Intenta con otros filtros o términos de búsqueda
+                    </p>
+                  </div>
+                )}
               </div>
             )}
 

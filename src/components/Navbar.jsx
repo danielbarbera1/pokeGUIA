@@ -1,9 +1,12 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useSearch } from '../context/SearchContext';
 
 const Navbar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [searchTerm, setSearchTerm] = useState('');
+    const [localSearch, setLocalSearch] = useState('');
+    const { setSearchTerm } = useSearch();
+    const navigate = useNavigate();
 
     const toggleMenu = () => {
         setIsMenuOpen(!isMenuOpen);
@@ -11,10 +14,10 @@ const Navbar = () => {
 
     const handleSearch = (e) => {
         e.preventDefault();
-        // Aquí puedes manejar la búsqueda
-        console.log('Buscando:', searchTerm);
-        // Redirigir a la página de búsqueda
-        // navigate(`/buscar?q=${searchTerm}`);
+        if (localSearch.trim() !== '') {
+            setSearchTerm(localSearch.toLowerCase());
+            navigate('/buscar');
+        }
     };
 
     return (
@@ -32,8 +35,8 @@ const Navbar = () => {
                             <input
                                 type="text"
                                 placeholder="Buscar Pokémon, movimientos, tipos..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
+                                value={localSearch}
+                                onChange={(e) => setLocalSearch(e.target.value)}
                                 className="w-full px-4 py-2 pr-10 rounded-full border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-gray-700"
                             />
                             <button
@@ -78,8 +81,8 @@ const Navbar = () => {
                             <input
                                 type="text"
                                 placeholder="Buscar Pokémon..."
-                                value={searchTerm}
-                                onChange={(e) => setSearchTerm(e.target.value)}
+                                value={localSearch}
+                                onChange={(e) => setLocalSearch(e.target.value)}
                                 className="w-full px-4 py-2 pr-10 rounded-full border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none text-gray-700"
                             />
                             <button

@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Card from '../components/Card';
 // Simple image component with basic fallback styling if loading fails
 const PokemonImage = ({ src, alt }) => {
   const [err, setErr] = useState(false);
@@ -146,64 +145,60 @@ const PokemonBattleSimulator = () => {
       </h1>
 
       {/* Arena de batalla */}
-      <div className="grid grid-cols-2 gap-8 mb-8 mx-auto max-w-4xl">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8 mx-auto max-w-4xl">
         {/* Pokémon 1 */}
-        <Card className="bg-white border-4 border-yellow-400 shadow-lg">
-          <div className="p-6">
-            <div className="text-center">
-              <PokemonImage src={pokemon1.image} alt={pokemon1.name} />
-              <h2 className="text-2xl font-bold text-gray-800">{pokemon1.name}</h2>
-              <p className="text-sm text-gray-600">Tipo: {pokemon1.type}</p>
-              <div className="text-sm text-gray-500 mt-1">ID: {pokemon1.id}</div>
+        <div className="bg-white rounded-xl border-4 border-yellow-400 shadow-lg p-6">
+          <div className="text-center">
+            <PokemonImage src={pokemon1.image} alt={pokemon1.name} />
+            <h2 className="text-2xl font-bold text-gray-800">{pokemon1.name}</h2>
+            <p className="text-sm text-gray-600">Tipo: {pokemon1.type}</p>
+            <div className="text-sm text-gray-500 mt-1">#{pokemon1.id}</div>
 
-              <div className="mt-4">
-                <div className="flex justify-between text-sm mb-1">
-                  <span>HP</span>
-                  <span>{pokemon1.hp}/{pokemon1.maxHp}</span>
-                </div>
-                <Progress
-                  value={(pokemon1.hp / pokemon1.maxHp) * 100}
-                  className="h-3"
-                />
+            <div className="mt-4">
+              <div className="flex justify-between text-sm mb-1 text-gray-700">
+                <span>HP</span>
+                <span>{pokemon1.hp}/{pokemon1.maxHp}</span>
               </div>
+              <Progress
+                value={(pokemon1.hp / pokemon1.maxHp) * 100}
+                className="h-3"
+              />
+            </div>
 
-              <div className="grid grid-cols-2 gap-2 mt-4 text-sm">
-                <div>Ataque: {pokemon1.attack}</div>
-                <div>Defensa: {pokemon1.defense}</div>
-                <div>Velocidad: {pokemon1.speed}</div>
-              </div>
+            <div className="grid grid-cols-2 gap-2 mt-4 text-sm text-gray-700">
+              <div>⚔️ Ataque: {pokemon1.attack}</div>
+              <div>🛡️ Defensa: {pokemon1.defense}</div>
+              <div className="col-span-2">💨 Velocidad: {pokemon1.speed}</div>
             </div>
           </div>
-        </Card>
+        </div>
 
         {/* Pokémon 2 */}
-        <Card className="bg-white border-4 border-red-400 shadow-lg">
-          <div className="p-6">
-            <div className="text-center">
-              <PokemonImage src={pokemon2.image} alt={pokemon2.name} />
-              <h2 className="text-2xl font-bold text-gray-800">{pokemon2.name}</h2>
-              <p className="text-sm text-gray-600">Tipo: {pokemon2.type}</p>
-              <div className="text-sm text-gray-500 mt-1">ID: {pokemon2.id}</div>
+        <div className="bg-white rounded-xl border-4 border-red-400 shadow-lg p-6">
+          <div className="text-center">
+            <PokemonImage src={pokemon2.image} alt={pokemon2.name} />
+            <h2 className="text-2xl font-bold text-gray-800">{pokemon2.name}</h2>
+            <p className="text-sm text-gray-600">Tipo: {pokemon2.type}</p>
+            <div className="text-sm text-gray-500 mt-1">#{pokemon2.id}</div>
 
-              <div className="mt-4">
-                <div className="flex justify-between text-sm mb-1">
-                  <span>HP</span>
-                  <span>{pokemon2.hp}/{pokemon2.maxHp}</span>
-                </div>
-                <Progress
-                  value={(pokemon2.hp / pokemon2.maxHp) * 100}
-                  className="h-3"
-                />
+            <div className="mt-4">
+              <div className="flex justify-between text-sm mb-1 text-gray-700">
+                <span>HP</span>
+                <span>{pokemon2.hp}/{pokemon2.maxHp}</span>
               </div>
+              <Progress
+                value={(pokemon2.hp / pokemon2.maxHp) * 100}
+                className="h-3"
+              />
+            </div>
 
-              <div className="grid grid-cols-2 gap-2 mt-4 text-sm">
-                <div>Ataque: {pokemon2.attack}</div>
-                <div>Defensa: {pokemon2.defense}</div>
-                <div>Velocidad: {pokemon2.speed}</div>
-              </div>
+            <div className="grid grid-cols-2 gap-2 mt-4 text-sm text-gray-700">
+              <div>⚔️ Ataque: {pokemon2.attack}</div>
+              <div>🛡️ Defensa: {pokemon2.defense}</div>
+              <div className="col-span-2">💨 Velocidad: {pokemon2.speed}</div>
             </div>
           </div>
-        </Card>
+        </div>
       </div>
 
       {/* VS Banner */}
@@ -258,24 +253,22 @@ const PokemonBattleSimulator = () => {
       )}
 
       {/* Registro de batalla */}
-      <Card className="bg-gray-800 border-2 border-gray-600">
-        <div className="p-4">
-          <h3 className="text-lg font-semibold mb-2 text-white">📋 Registro de batalla:</h3>
-          <div className="space-y-1">
-            {battleLog.length > 0 ? (
-              battleLog.map((log, index) => (
-                <p key={index} className="text-sm text-gray-200">
-                  {log}
-                </p>
-              ))
-            ) : (
-              <p className="text-sm text-gray-400 italic">
-                {battleActive ? '¡La batalla ha comenzado!' : 'Esperando para iniciar la batalla...'}
+      <div className="max-w-4xl mx-auto bg-gray-800 rounded-xl border-2 border-gray-600 p-4">
+        <h3 className="text-lg font-semibold mb-3 text-white">📋 Registro de batalla:</h3>
+        <div className="space-y-2">
+          {battleLog.length > 0 ? (
+            battleLog.map((log, index) => (
+              <p key={index} className="text-sm text-gray-200 bg-gray-700 rounded px-3 py-2">
+                {log}
               </p>
-            )}
-          </div>
+            ))
+          ) : (
+            <p className="text-sm text-gray-400 italic">
+              {battleActive ? '¡La batalla ha comenzado!' : 'Esperando para iniciar la batalla...'}
+            </p>
+          )}
         </div>
-      </Card>
+      </div>
     </div>
   );
 };

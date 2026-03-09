@@ -1,5 +1,6 @@
 import React from 'react'
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { SearchProvider } from './context/SearchContext'
 import Footer from "./components/Footer"
 import Navbar from "./components/Navbar"
 import Index from "./pages/Index.jsx"
@@ -13,27 +14,31 @@ import Movimientos from './pages/Movimientos.jsx'
 import CreadorEquipo from './pages/CreadorEquipo.jsx'
 import Privacidad from './pages/Privacidad.jsx'
 import Terminos from './pages/Terminos.jsx'
+import SearchResults from './pages/SearchResults.jsx'
 
 function App() {
   return (
-    <BrowserRouter>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Inicio />} />
-        <Route path="/inicio" element={<Inicio />} />
-        <Route path="/pokedex" element={<Pokedex />} />
-        <Route path="/generaciones" element={<Generaciones />} />
-        <Route path="/batallas" element={<Batallas />} />
-        <Route path="/tipos" element={<Tipos />} />
-        <Route path="*" element={<Navigate to="/" />} />
-        <Route path="/calculadora" element={<CalculadoraTipos />} />
-        <Route path="/movimientos" element={<Movimientos />} />
-        <Route path="/creador" element={<CreadorEquipo />} />
-        <Route path="/privacidad" element={<Privacidad />} />
-        <Route path="/terminos" element={<Terminos />} />
-      </Routes>
-      <Footer />
-    </BrowserRouter>
+    <SearchProvider>
+      <BrowserRouter>
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<Inicio />} />
+          <Route path="/inicio" element={<Inicio />} />
+          <Route path="/pokedex" element={<Pokedex />} />
+          <Route path="/generaciones" element={<Generaciones />} />
+          <Route path="/batallas" element={<Batallas />} />
+          <Route path="/tipos" element={<Tipos />} />
+          <Route path="/calculadora" element={<CalculadoraTipos />} />
+          <Route path="/movimientos" element={<Movimientos />} />
+          <Route path="/creador" element={<CreadorEquipo />} />
+          <Route path="/privacidad" element={<Privacidad />} />
+          <Route path="/terminos" element={<Terminos />} />
+          <Route path="/buscar" element={<SearchResults />} />
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+        <Footer />
+      </BrowserRouter>
+    </SearchProvider>
   )
 }
 

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Card from '../components/Card';
 import Button from '../components/Button';
 import Progress from '../components/Progress';
 
@@ -42,17 +41,17 @@ const CreadorEquipo = () => {
     fairy: 'bg-pink-300',
   };
 
-  // Generaciones
+  // Generaciones con rango de IDs
   const generations = [
-    { id: 1, name: 'Generación I', limit: 151 },
-    { id: 2, name: 'Generación II', limit: 251 },
-    { id: 3, name: 'Generación III', limit: 386 },
-    { id: 4, name: 'Generación IV', limit: 493 },
-    { id: 5, name: 'Generación V', limit: 649 },
-    { id: 6, name: 'Generación VI', limit: 721 },
-    { id: 7, name: 'Generación VII', limit: 809 },
-    { id: 8, name: 'Generación VIII', limit: 898 },
-    { id: 9, name: 'Generación IX', limit: 1010 }
+    { id: 1, name: 'Generación I', start: 1, end: 151 },
+    { id: 2, name: 'Generación II', start: 152, end: 251 },
+    { id: 3, name: 'Generación III', start: 252, end: 386 },
+    { id: 4, name: 'Generación IV', start: 387, end: 493 },
+    { id: 5, name: 'Generación V', start: 494, end: 649 },
+    { id: 6, name: 'Generación VI', start: 650, end: 721 },
+    { id: 7, name: 'Generación VII', start: 722, end: 809 },
+    { id: 8, name: 'Generación VIII', start: 810, end: 905 },
+    { id: 9, name: 'Generación IX', start: 906, end: 1025 }
   ];
 
   useEffect(() => {
@@ -70,13 +69,33 @@ const CreadorEquipo = () => {
       }
     };
     fetchTypes();
-    fetchInitialPokemon();
   }, []);
 
-  const fetchInitialPokemon = async () => {
+  // Cargar Pokémon cuando cambia la generación
+  useEffect(() => {
+    fetchPokemonByGeneration();
+  }, [selectedGen]);
+
+  const fetchPokemonByGeneration = async () => {
     try {
       setLoading(true);
-      const res = await fetch('https://pokeapi.co/api/v2/pokemon?limit=151&offset=0');
+      
+      let start, end;
+      
+      if (selectedGen === 'todos') {
+        // Cargar solo Gen I por defecto cuando es "todos"
+        start = 1;
+        end = 151;
+      } else {
+        const gen = generations.find(g => g.id === parseInt(selectedGen));
+        start = gen.start;
+        end = gen.end;
+      }
+      
+      const limit = end - start + 1;
+      const offset = start - 1;
+      
+      const res = await fetch(`https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`);
       if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
       const data = await res.json();
 
@@ -84,7 +103,7 @@ const CreadorEquipo = () => {
         try {
           const detailRes = await fetch(pokemon.url);
           const detailData = await detailRes.json();
-          
+
           return {
             id: detailData.id,
             name: detailData.name,
@@ -115,29 +134,73 @@ const CreadorEquipo = () => {
     }
   };
 
-  // Filtrar Pokémon
+  // Filtrar Pokémon por nombre y tipo (la generación ya se maneja en fetchPokemonByGeneration)
   useEffect(() => {
     let filtered = pokemonList;
 
     if (searchTerm) {
-      filtered = filtered.filter(p => 
+      filtered = filtered.filter(p =>
         p.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
     }
 
     if (selectedType !== 'todos') {
-      filtered = filtered.filter(p => 
+      filtered = filtered.filter(p =>
         p.types.includes(selectedType)
       );
     }
 
-    if (selectedGen !== 'todos') {
-      const gen = generations.find(g => g.id === parseInt(selectedGen));
-      filtered = filtered.filter(p => p.id <= gen.limit);
+    setFilteredPokemon(filtered);
+  }, [searchTerm, selectedType, pokemonList]);
+
+  const [isSearchingApi, setIsSearchingApi] = useState(false)
+  const [searchFailed, setSearchFailed] = useState(false)
+
+  // Búsqueda específica en la PokeAPI si no está en la lista actual
+  useEffect(() => {
+    const searchExternalPokemon = async () => {
+      if (!searchTerm || searchTerm.trim() === '') return;
+      if (filteredPokemon.length === 0) {
+        try {
+          setIsSearchingApi(true)
+          setSearchFailed(false)
+          const res = await fetch(`https://pokeapi.co/api/v2/pokemon/${searchTerm.toLowerCase().trim()}`)
+          if (!res.ok) throw new Error('Not found')
+          const detailData = await res.json()
+
+          const newPoke = {
+            id: detailData.id,
+            name: detailData.name,
+            image: detailData.sprites.other['official-artwork'].front_default,
+            types: detailData.types.map(t => t.type.name),
+            stats: {
+              hp: detailData.stats[0].base_stat,
+              attack: detailData.stats[1].base_stat,
+              defense: detailData.stats[2].base_stat,
+              speed: detailData.stats[5].base_stat
+            },
+            height: detailData.height,
+            weight: detailData.weight
+          };
+
+          setPokemonList(prev => {
+            if (prev.find(p => p.id === detailData.id)) return prev;
+            return [newPoke, ...prev];
+          })
+        } catch (e) {
+          setSearchFailed(true)
+        } finally {
+          setIsSearchingApi(false)
+        }
+      }
     }
 
-    setFilteredPokemon(filtered);
-  }, [searchTerm, selectedType, selectedGen, pokemonList]);
+    const timer = setTimeout(() => {
+      searchExternalPokemon()
+    }, 500)
+
+    return () => clearTimeout(timer)
+  }, [searchTerm, filteredPokemon.length])
 
   // Añadir Pokémon al equipo
   const addToTeam = (pokemon) => {
@@ -226,7 +289,7 @@ const CreadorEquipo = () => {
                   onChange={(e) => setSearchTerm(e.target.value)}
                   className="px-4 py-2 rounded-lg bg-gray-700 border border-gray-600 focus:border-blue-500 outline-none text-white"
                 />
-                
+
                 <select
                   value={selectedType}
                   onChange={(e) => setSelectedType(e.target.value)}
@@ -266,18 +329,44 @@ const CreadorEquipo = () => {
               </div>
             ) : (
               <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-                {filteredPokemon.map(pokemon => (
-                  <Card key={pokemon.id} className="bg-gray-800 hover:bg-gray-750 transition-colors">
-                    <div className="p-3">
+                {filteredPokemon.length === 0 ? (
+                  <div className="col-span-1 sm:col-span-2 xl:col-span-3 text-center py-12">
+                    {isSearchingApi ? (
+                      <div className="flex flex-col items-center">
+                        <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500 mb-2"></div>
+                        <p className="text-gray-400">Buscando "{searchTerm}" en la PokeAPI...</p>
+                      </div>
+                    ) : searchFailed ? (
+                      <div className="flex flex-col items-center">
+                        <span className="text-4xl mb-2">❓</span>
+                        <p className="text-xl text-gray-400 mb-2">
+                          No se encontró ningún Pokémon llamado "{searchTerm}"
+                        </p>
+                      </div>
+                    ) : (
+                      <div>
+                        <p className="text-xl text-gray-400 mb-2">
+                          No se encontraron Pokémon
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  filteredPokemon.map(pokemon => (
+                    <div 
+                      key={pokemon.id} 
+                      className="bg-gray-800 rounded-xl p-3 hover:bg-gray-700 transition-colors border border-gray-700"
+                    >
                       <div className="flex items-center gap-3">
-                        <img 
-                          src={pokemon.image} 
+                        <img
+                          src={pokemon.image}
                           alt={pokemon.name}
                           className="w-16 h-16 object-contain"
+                          loading="lazy"
                         />
                         <div className="flex-1">
                           <div className="flex justify-between items-start">
-                            <h3 className="font-bold capitalize">{pokemon.name}</h3>
+                            <h3 className="font-bold capitalize text-white">{pokemon.name}</h3>
                             <span className="text-xs text-gray-400">#{pokemon.id}</span>
                           </div>
                           <div className="flex gap-1 mt-1">
@@ -288,7 +377,7 @@ const CreadorEquipo = () => {
                               </span>
                             ))}
                           </div>
-                          <div className="grid grid-cols-4 gap-1 mt-2 text-xs">
+                          <div className="grid grid-cols-4 gap-1 mt-2 text-xs text-gray-300">
                             <div>HP {pokemon.stats.hp}</div>
                             <div>ATQ {pokemon.stats.attack}</div>
                             <div>DEF {pokemon.stats.defense}</div>
@@ -304,8 +393,8 @@ const CreadorEquipo = () => {
                         Añadir al equipo
                       </Button>
                     </div>
-                  </Card>
-                ))}
+                  ))
+                )}
               </div>
             )}
           </div>

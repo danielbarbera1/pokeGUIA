@@ -19,7 +19,7 @@ const Footer = () => {
                         </h6>
                         <div className="space-y-3">
                             <Link to="/calculadora" className="block text-gray-400 hover:text-red-400 transition-colors duration-300 hover:translate-x-1">Calculadora de Tipos</Link>
-                            <Link to="/creador-equipo" className="block text-gray-400 hover:text-blue-400 transition-colors duration-300 hover:translate-x-1">Creador de Equipos</Link>
+                            <Link to="/creador" className="block text-gray-400 hover:text-blue-400 transition-colors duration-300 hover:translate-x-1">Creador de Equipos</Link>
                             <Link to="/pokedex" className="block text-gray-400 hover:text-green-400 transition-colors duration-300 hover:translate-x-1">Pokédex</Link>
                             <Link to="/movimientos" className="block text-gray-400 hover:text-yellow-400 transition-colors duration-300 hover:translate-x-1">Base de Datos de Movimientos</Link>
                         </div>
